@@ -44,7 +44,7 @@ class AudioEncodingConfig {
         if (progress.percent)
           console.log(`Progresso: ${progress.percent.toFixed(1)}%`);
       })
-      .on("end", (end) => {
+      .on("end", _ => {
         console.log("O processo terminou!");
       })
       .run();

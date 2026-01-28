@@ -1,10 +1,11 @@
-import ConfigF from './config/video-encoding-config.ts'
-import AudioEncodingConfig from './config/audio-encoding-config.ts'
-
+import AudioTransformText from './config/audio-transform-text.ts'
 const dir = "./src/video.mp4";
 
 
-const audioConfig = new AudioEncodingConfig(dir)
+const  audioTransformText= new AudioTransformText('./assets/output/audio_extracted.mp3')
+
+audioTransformText.AudioConvertText()
 
 
-audioConfig.extract_audio()
+
+
