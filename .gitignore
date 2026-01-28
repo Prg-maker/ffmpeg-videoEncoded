@@ -1,4 +1,6 @@
 *.mp4
 *.mp*
+*.wav
 ./src/*.mp4
+./src/*.wav
 node_modules
