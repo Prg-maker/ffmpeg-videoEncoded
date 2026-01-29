@@ -4,3 +4,5 @@
 ./src/*.mp4
 ./src/*.wav
 node_modules
+
+out.txt

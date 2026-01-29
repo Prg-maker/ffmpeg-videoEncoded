@@ -1,7 +1,16 @@
 import { pipeline } from '@huggingface/transformers'
-import {createReadStream} from 'fs'
+import {createReadStream , createWriteStream} from 'fs'
 import waveFile  from 'wavefile'; 
 
+interface OutputInterface {
+    text : string
+    chunks: []
+}
+
+interface OutputInterfaceTimestamp{
+    timestamp: Number[]
+    text:string
+}
 class AudioTransformText{
     private file_directory:string
 
@@ -53,16 +62,29 @@ class AudioTransformText{
 
         let start = performance.now();
         let output = await transcriber(audioData ,{
-            language: 'pt',                     // Forçar português
+            language: 'pt',                     
             task: 'transcribe',
-            stride_length_s: 5,                 // Overlap de 5s entre chunks
+            stride_length_s: 5,                 
             chunk_length_s: 30,
-            batch_size: 16 
-        });
+            batch_size: 16,
+            return_timestamps: true
+        }) as OutputInterface;
         let end = performance.now();
 
+
+        const stream = createWriteStream("./assets/out.txt", {})
+
+
+
+        stream.write(output.text)
+
+
+        for (let chunk  of output.chunks) {
+            stream.write(JSON.stringify(chunk) + '\n')
+        } 
+
+        stream.end()
         console.log(`Execution duration: ${(end - start) / 1000} seconds`);
-        console.log(output.text);
     }
 }
 
