@@ -7,25 +7,23 @@ interface OutputInterface {
     chunks: []
 }
 
-interface OutputInterfaceTimestamp{
-    timestamp: Number[]
-    text:string
-}
-class AudioTransformText{
-    private file_directory:string
 
-    constructor(file_directory:string){
-        this.file_directory = file_directory
+
+
+class AudioTransformText{
+    private audio_directory:string
+
+    constructor(audio_directory:string){
+        this.audio_directory = audio_directory
     }
 
-
+    
     public async AudioConvertText():Promise<void>{
-        const audio_directory = "./assets/audio1.wav";
         //let transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny.en');
         
         let transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-small')
         
-        const audio = createReadStream(audio_directory , {
+        const audio = createReadStream(this.audio_directory , {
             highWaterMark: 1024  ,
             encoding: undefined
         })
@@ -61,11 +59,13 @@ class AudioTransformText{
         }
 
         let start = performance.now();
+        
         let output = await transcriber(audioData ,{
             language: 'pt',                     
             task: 'transcribe',
             stride_length_s: 5,                 
             chunk_length_s: 30,
+            // @ts-ignore 
             batch_size: 16,
             return_timestamps: true
         }) as OutputInterface;
