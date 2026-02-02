@@ -93,9 +93,6 @@ class VideoEncodingConfig {
       .run();
   }
 
-
-
-
   // falta implementar as outras configurações de tamanho e tipo de arquivo
   public process_video_default_with_options({
     name,
