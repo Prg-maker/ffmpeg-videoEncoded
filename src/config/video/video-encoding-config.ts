@@ -8,9 +8,19 @@
     type: "mp4" | "mov" | "avi";
   }
   class VideoEncodingConfig {
-    private file_directory: string;
+
+
+    private file_directory : string ;
+    private name :string;
+
     constructor(file_directory: string) {
       this.file_directory = file_directory;
+
+      this.name = file_directory.split("/").filter(n => {
+        if(n.includes(".mp4")) return n
+      })[0]
+
+      
       ffmpeg.setFfmpegPath(ffmpegStatic as string );
 
       ffmpeg(this.file_directory).ffprobe((err, metadata) => {
@@ -24,10 +34,13 @@
           metadata.streams[0].width + "x" + metadata.streams[0].height,
         );
       });
+      
+      
+    
     }
     public process_video_default(): void {
       ffmpeg(this.file_directory)
-        .output(`./assets/output/video/default/${this.file_directory}_default.mp4`)
+        .output(`./assets/video/default/${this.name.split(".")[0]}_default.mp4`)
         .videoCodec("libx264")
         .audioCodec("aac")
         .videoBitrate("5000k")
@@ -35,9 +48,6 @@
         .audioChannels(2)
         .audioFrequency(48000)
 
-        .on("start", (commandLine) => {
-          console.log(" Comando:", commandLine);
-        })
         .on("progress", (progress) => {
           if (progress.percent)
             console.log(` Progresso: ${progress.percent.toFixed(1)}%`);
@@ -52,9 +62,11 @@
     }
 
     public process_youtube_video_short(): void {
+
+      console.log(this.name)
       ffmpeg(this.file_directory)
         // arrumar esse this.file_directory, pega todo diretorio mas so quero pegar o nome
-        .output(`./assets/output/video/youtube_short/${this.file_directory}_youtube_short.mp4`)
+        .output(`./assets/video/youtube_short/${this.name.split(".")[0]}_youtube_short.mp4`)
         .videoCodec("libx264")
 
         

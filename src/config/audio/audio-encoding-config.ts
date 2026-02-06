@@ -3,6 +3,8 @@ import ffmpegStatic from "ffmpeg-static";
 
 class AudioEncodingConfig {
   private file_directory: string;
+  private name: string;
+
 
   constructor(file_directory: string) {
     this.file_directory = file_directory;
@@ -15,6 +17,8 @@ class AudioEncodingConfig {
       }
       console.log("Video duration:", metadata.format.duration);
     });
+    this.name = file_directory
+  
   }
 
   public extract_audio(): void {
