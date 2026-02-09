@@ -1,10 +1,13 @@
 import { pipeline } from '@huggingface/transformers'
 import {createReadStream , createWriteStream} from 'fs'
 import waveFile  from 'wavefile'; 
+import {transform_mp3_to_wav} from '../../utils/transform-mp3-to-wav.ts'
 
 interface OutputInterface {
     text : string
-    chunks: []
+    chunks: [
+       
+    ]
 }
 
 
@@ -12,18 +15,26 @@ interface OutputInterface {
 
 class AudioTransformText{
     private audio_directory:string
-
     constructor(audio_directory:string){
         this.audio_directory = audio_directory
+       
     }
 
     
     public async AudioConvertText():Promise<void>{
         //let transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny.en');
+
+        const typefile = this.audio_directory.split(".").pop()
         
+        if(typefile!= 'wav'){
+                await transform_mp3_to_wav(this.audio_directory)
+        }
+        const name = this.audio_directory.split("/").pop()?.split(".")[0]
+        const directory = `./assets/wav/${name}.wav`
+        console.log(directory)
         let transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-small')
         
-        const audio = createReadStream(this.audio_directory , {
+        const audio = createReadStream(directory , {
             highWaterMark: 1024  ,
             encoding: undefined
         })
@@ -72,17 +83,25 @@ class AudioTransformText{
         let end = performance.now();
 
 
-        const stream = createWriteStream("./assets/out.txt", {})
+        const stream = createWriteStream("./assets/out.txt", )
+        const streamJson = createWriteStream("./assets/out.json",{
+        })
 
 
 
+        const dados = output.chunks
         stream.write(output.text)
 
+        streamJson.write("[ \n")
+        dados.forEach((item, index)=>{
+            const linha = JSON.stringify(item);
+            const isLast = index === dados.length - 1;
+            streamJson.write('  ' + linha + (isLast ? '' : ',') + '\n');
+        } )
+        streamJson.write("]")
 
-        for (let chunk  of output.chunks) {
-            stream.write(JSON.stringify(chunk) + '\n')
-        } 
-
+        
+        
         stream.end()
         console.log(`Execution duration: ${(end - start) / 1000} seconds`);
     }

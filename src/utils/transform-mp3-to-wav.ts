@@ -1,13 +1,9 @@
 import ffmpeg from "fluent-ffmpeg";
 
 export function transform_mp3_to_wav(input_path: string) {
-  return new Promise((reject, resolve) => {
+  return new Promise((resolve, reject) => {
 
-    
-    const name_file = input_path.split("/").filter((n) => {
-      if (n.includes("mp3")) return n;
-    })[0];
-
+    const name = input_path.split("/").pop()?.split(".")[0]
 
     ffmpeg(input_path)
       .toFormat("wav")
@@ -16,10 +12,12 @@ export function transform_mp3_to_wav(input_path: string) {
       .audioChannels(2)
       .on("end", () => {
         console.log("Conversão concluída!");
+        resolve()
       })
       .on("error", (err) => {
         console.error("Erro na conversão:", err);
+        reject()
       })
-      .save(`./assets/wav/${name_file}.wav`);
+      .save(`./assets/wav/${name}.wav`);
   });
 }

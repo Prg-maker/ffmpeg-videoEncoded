@@ -5,10 +5,12 @@ import VideoEncoding from './config/video/video-encoding-config.ts'
 
 //audioTransformText.AudioConvertText()
 
-const dir = "./src/video.mp4";
-//const dir = "./assets/output/audio_extracted.mp3"
+//const dir = "./src/video.mp4";
+const dir = "./assets/output/audio_extracted.mp3"
 
 
 
-const videoEncodig = new VideoEncoding(dir)
-videoEncodig.process_video_default()
+const audio = new AudioTransformText(dir)
+audio.AudioConvertText()
+//const videoEncodig = new VideoEncoding(dir)
+//videoEncodig.process_video_default()
