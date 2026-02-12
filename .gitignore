@@ -6,3 +6,10 @@
 node_modules
 
 out.txt
+./assets/out.json
+*.txt
+audio_extracted.*
+./assets/legendas/text/*.txt
+
+audio1.json
+importancia.json
