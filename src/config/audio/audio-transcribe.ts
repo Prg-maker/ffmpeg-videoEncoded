@@ -28,60 +28,17 @@ class AudioTranscriber{
 
     
     public async transcribe():Promise<void>{
-        //let transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny.en');
-
 
 
         await this.ensureWavFormat()
-        
-        
         const transcriber = await this.initializeTranscriberMode()
-      
-   
         const buffer = await this.loadAndProcessAudio()
-
-       const audioData = this.processAudioBuffer(buffer)
-
-        let start = performance.now();
-        
-        let output = await transcriber(audioData ,{
-            language: 'pt',                     
-            task: 'transcribe',
-            stride_length_s: 5,                 
-            chunk_length_s: 30,
-            // @ts-ignore 
-            batch_size: 16,
-            return_timestamps: true
-        }) as TranscriptionOutput;
-        let end = performance.now();
-
-
-        const stream = createWriteStream(`./assets/legendas/text/${this.name}.txt`, {
-            flags: 'w',
-            
-        })
-        const streamJson = createWriteStream(`./assets/legendas/timestamp/${this.name}.json`,{
-            flags:'w'
-        })
-
-
-
-        const dados = output.chunks
-
-        stream.write(output.text)
-
-        streamJson.write("[ \n")
-        dados.forEach((item, index)=>{
-            const linha = JSON.stringify(item);
-            const isLast = index === dados.length - 1;
-            streamJson.write('  ' + linha + (isLast ? '' : ',') + '\n');
-        } )
-        streamJson.write("]")
-
+        const audioData = this.processAudioBuffer(buffer)
+        const output = await this.performTranscription(transcriber, audioData)
+        this.saveTranscription(output)
         
         
-        stream.end()
-        console.log(`Execution duration: ${(end - start) / 1000} seconds`);
+        
     }
 
     private async ensureWavFormat(){
@@ -95,6 +52,7 @@ class AudioTranscriber{
     }
 
     private async initializeTranscriberMode(){
+        //let transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny.en');
         return await await pipeline('automatic-speech-recognition', 'Xenova/whisper-small')
     }
 
@@ -144,7 +102,63 @@ class AudioTranscriber{
         return audioData  ;
     }
 
+    private async performTranscription(transcriber: any, audioData:any):Promise<TranscriptionOutput>{
+        let start = performance.now();
+        
+        let output = await transcriber(audioData ,{
+            language: 'pt',                     
+            task: 'transcribe',
+            stride_length_s: 5,                 
+            chunk_length_s: 30,
+            // @ts-ignore 
+            batch_size: 16,
+            return_timestamps: true
+        }) as TranscriptionOutput;
+        let end = performance.now();
 
+        console.log(`Execution duration: ${(end - start) / 1000} seconds`);
+
+
+        return output
+    }
+
+    private async saveTranscription(transcription:TranscriptionOutput):Promise<void>{
+        const filename = this.name || "trasncription"
+
+        await Promise.all([
+            this.saveTextFile(filename, transcription.text),
+            this.saveTextJson(filename, transcription.chunks)
+        ])
+    }
+
+    private async saveTextFile(filename: string , content: string):Promise<void>{
+        const stream = createWriteStream(`./assets/legendas/text/${filename}.txt`, {
+            flags: "w"
+        })
+
+        stream.write(content)
+        stream.end()
+
+    }
+
+
+
+    private async saveTextJson(filaname:string, content:Chunk[]):Promise<void>{
+
+        const streamJson = createWriteStream(`./assets/legendas/timestamp/${this.name}.json`,{
+            flags:'w'
+        })
+
+        streamJson.write("[ \n")
+        content.forEach((item, index)=>{
+            const linha = JSON.stringify(item);
+            const isLast = index === content.length - 1;
+            streamJson.write('  ' + linha + (isLast ? '' : ',') + '\n');
+        } )
+        streamJson.write("]")
+        streamJson.end()
+
+    }
 
 
 
