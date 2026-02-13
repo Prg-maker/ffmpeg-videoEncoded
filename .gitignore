@@ -13,3 +13,5 @@ audio_extracted.*
 
 audio1.json
 importancia.json
+
+*.srt

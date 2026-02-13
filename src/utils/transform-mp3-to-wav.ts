@@ -12,7 +12,7 @@ export function transform_mp3_to_wav(input_path: string) {
       .audioChannels(2)
       .on("end", () => {
         console.log("Conversão concluída!");
-        resolve()
+        resolve(arguments)
       })
       .on("error", (err) => {
         console.error("Erro na conversão:", err);

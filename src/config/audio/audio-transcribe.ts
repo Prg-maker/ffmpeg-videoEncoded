@@ -160,6 +160,17 @@ class AudioTranscriber{
 
     }
 
+    private async saveTextSrt(filaname:string, content:Chunk[]):Promise<void>{
+
+        const streamSrt = createWriteStream(`./assets/legendas/timestamp/${this.name}.srt`,{
+            flags:'w'
+        })
+
+        content.forEach((item)=> {
+            
+        })
+    }
+
 
 
 }
