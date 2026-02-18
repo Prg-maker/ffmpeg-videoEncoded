@@ -127,7 +127,8 @@ class AudioTranscriber{
 
         await Promise.all([
             this.saveTextFile(filename, transcription.text),
-            this.saveTextJson(filename, transcription.chunks)
+            this.saveTextJson(filename, transcription.chunks),
+            this.saveSrt(filename, transcription.chunks)
         ])
     }
 
@@ -160,15 +161,34 @@ class AudioTranscriber{
 
     }
 
-    private async saveTextSrt(filaname:string, content:Chunk[]):Promise<void>{
+    private formatTimeSRT(seconds: number): string {
+  const totalSeconds = Math.max(0, seconds);
+  
+  const hrs = Math.floor(totalSeconds / 3600);
+  const mins = Math.floor((totalSeconds % 3600) / 60);
+  const secs = Math.floor(totalSeconds % 60);
+  const ms = Math.floor((totalSeconds - Math.floor(totalSeconds)) * 1000);
+  
+  return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')},${String(ms).padStart(3, '0')}`;
+}
+
+
+    private async saveSrt(filaname:string, content:Chunk[]):Promise<void>{
 
         const streamSrt = createWriteStream(`./assets/legendas/timestamp/${this.name}.srt`,{
-            flags:'w'
+            flags:'w',
+               encoding: 'utf8'
+        }) 
+        
+        content.forEach((item, index) => {
+            const startTime = this.formatTimeSRT(item.timestamp[0])
+            const endTime = this.formatTimeSRT(item.timestamp[1])
+            const text= item.text.trim()
+            streamSrt.write(`${index + 1}\n`);
+            streamSrt.write(`${startTime} --> ${endTime}\n`);
+            streamSrt.write(`${text}\n\n`);
         })
 
-        content.forEach((item)=> {
-            
-        })
     }
 
 
