@@ -40,7 +40,6 @@ class AudioTranscriber{
         
         
     }
-
     private async ensureWavFormat(){
 
         const typefile = this.audioPath.split(".").pop()
@@ -175,7 +174,7 @@ class AudioTranscriber{
 
     private async saveSrt(filaname:string, content:Chunk[]):Promise<void>{
 
-        const streamSrt = createWriteStream(`./assets/legendas/timestamp/${this.name}.srt`,{
+        const streamSrt = createWriteStream(`./assets/legendas/srt/${this.name}.srt`,{
             flags:'w',
                encoding: 'utf8'
         }) 
