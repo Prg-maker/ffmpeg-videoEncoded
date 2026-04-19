@@ -15,13 +15,13 @@ class AddLegenda{
     public async add_legenda(){
         const legenda = "./assets/legendas/srt/audio_extracted.srt"
         const video = "./video1.mp4"
-        ffmpeg(video)
+    
+    ffmpeg(video)
     .videoFilters([
         {
             filter: 'subtitles',
             options: {
                 filename: legenda,
-                // Opções de estilo (opcional)
                    force_style: 'FontName=Trebuchet MS,FontSize=24,PrimaryColour=&H00FFFFFF&,OutlineColour=&H00000000&,BorderStyle=1,Outline=1'
             }
         }
@@ -38,7 +38,7 @@ class AddLegenda{
     .on('error', (err) => {
         console.error('❌ Erro:', err.message);
     })
-    .save("videocomlegenda.mp4");
+    .save("./videolegenda/videocomlegenda.mp4");
     } 
 }
 
